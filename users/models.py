@@ -13,13 +13,13 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     password = models.CharField(max_length=200)
-    avatar = models.TextField()
+    avatar = models.TextField(null=True)
     
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
     
     
-    objects = AbstractUser
+    objects = UserManager()
     
     USERNAME_FIELD: str = "email"
     REQUIRED_FIELDS = [ "first_name", "last_name", "password" ]
