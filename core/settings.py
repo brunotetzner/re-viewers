@@ -13,7 +13,11 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from os import getenv
 from pathlib import Path
 from dotenv import load_dotenv
+<<<<<<< HEAD
 
+=======
+from os import getenv
+>>>>>>> develop
 
 load_dotenv()
 
