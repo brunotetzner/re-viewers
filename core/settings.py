@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+from os import getenv
 from pathlib import Path
 from dotenv import load_dotenv
-from os import getenv
 
 load_dotenv()
 
@@ -34,21 +34,26 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework.authtoken',
-    'users',
-    'animes',
-    'rates',
-    'categories',
-    'rest_framework'
-
 ]
+
+MY_APPS = [
+    "users",
+]
+
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "rest_framework.authtoken",
+]
+
+INSTALLED_APPS = DJANGO_APPS + MY_APPS + THIRD_PARTY_APPS
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -132,3 +137,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = "users.User"
