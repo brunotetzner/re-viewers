@@ -1,4 +1,5 @@
 from django.http import Http404
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView, Request, Response, status
 from rest_framework.authtoken.models import Token
 from animes.models import Rate, Anime
@@ -6,9 +7,13 @@ from animes.serializers import AnimeSerializer
 from users.models import User
 from django.shortcuts import get_object_or_404
 from .serializers import RateSerializer
+from .permissions import HasToken
 
 
 class RatesView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [HasToken]
+    
     def post(self, request: Request):
         token = Token.objects.get(
             key=self.request.META.get("HTTP_AUTHORIZATION").split(" ")[1]
