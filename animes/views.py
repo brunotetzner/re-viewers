@@ -2,47 +2,43 @@ from rest_framework.generics import  ListCreateAPIView
 from rest_framework.authentication import TokenAuthentication
 from .models import Anime
 from rest_framework.permissions import IsAuthenticated
-from .serializers import AnimeSerializer
+from .serializers import AnimeSerializer, AnimeWithCategorySerializer
 from .permissions import HasPermission
 from rest_framework.views import APIView, Request, Response,  status
+from categories.serializers import CategorySerializer
+from categories.models import Category
 
-class ListAndCreateAnimesView(ListCreateAPIView):
+
+class AnimeView(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [HasPermission] 
-    queryset = Anime.objects.all()
-    serializer_class = AnimeSerializer
-
-
-# class AnimeView(APIView,
-# #  PageNumberPagination
-#  ):
-#     authentication_classes = [TokenAuthentication]
-#     permission_classes = [HasPermission]
+    permission_classes = [HasPermission]
     
-#     def get(self, request):     
+    def get(self, request):     
 
-#         animes = Anime.objects.all()
-#         pagination = self.paginate_queryset(queryset=animes, request=request, view=self)
-#         serialized = AnimeSerializer(pagination, many=True)
+        animes = Anime.objects.all()
+        serialized = AnimeWithCategorySerializer(instance=animes, many=True)
         
-#         return self.get_paginated_response(serialized.data)
+        return Response(serialized.data, status.HTTP_200_OK)
 
 
         
-#     def post(self, request:Request):
-#         serialize_anime = AnimeSerializer(data=request.data)
-#         serialize_anime.is_valid(raise_exception=True)
-        
-#         create_anime = Anime.objects.create(**serialize_anime.validated_data)
+    def post(self, request:Request):
+        serialize_anime = AnimeWithCategorySerializer(data=request.data)
+        serialize_anime.is_valid(raise_exception=True)
 
-#         categories = request.data["categories"]
-#         for genre in categories:
-#             serialize_genre = categorieserializer(data=genre)
-#             serialize_genre.is_valid(raise_exception=True)
-#             create_genre = categories.objects.get_or_create(**serialize_genre.validated_data)
-#             create_anime.categories.add(create_genre[0])
+        serialize_anime = AnimeSerializer(data=request.data)
+        serialize_anime.is_valid(raise_exception=True)
+        create_anime = Anime.objects.create(**serialize_anime.validated_data)
 
-#         serialize_anime = AnimeSerializer(instance=create_anime)
+        categories = request.data["categories"]
+        for category in categories:
+            
+            serialize_category = CategorySerializer(data=category)
+            serialize_category.is_valid(raise_exception=True)
+            create_category = Category.objects.get_or_create(**serialize_category.validated_data)
+            create_anime.categories.add(create_category[0])
+
+        serialize_anime = AnimeWithCategorySerializer(instance=create_anime)
 
 
-#         return Response(serialize_anime.data, status.HTTP_201_CREATED)
+        return Response(serialize_anime.data, status.HTTP_201_CREATED)

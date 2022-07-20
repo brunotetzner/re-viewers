@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import ListAndCreateAnimesView
+from .views import AnimeView
 
 urlpatterns = [
-    path('animes/', ListAndCreateAnimesView.as_view()),
+    path('animes/', AnimeView.as_view()),
   
 ]
