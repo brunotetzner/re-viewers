@@ -14,7 +14,7 @@ class Anime(models.Model):
     banner = models.CharField(max_length=128)
     original_title = models.CharField(max_length=50)
     launch_data = models.DateField()
-    user = models.ManyToManyField("users.User", through="animes.Rate")
+    users = models.ManyToManyField("users.User", through="animes.Rate")
     categories = models.ManyToManyField("categories.Category")
     
 
