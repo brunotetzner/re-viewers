@@ -36,5 +36,5 @@ class Userlist(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     anime = models.ForeignKey("animes.Anime", related_name="anime", on_delete=models.CASCADE)
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    user = models.ForeignKey("users.User", related_name="user", on_delete=models.CASCADE)
     watching_status = models.CharField(max_length=50, choices=ChoicesStatus.choices)
