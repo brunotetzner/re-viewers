@@ -15,6 +15,7 @@ class Anime(models.Model):
     original_title = models.CharField(max_length=50)
     launch_data = models.DateField()
     users = models.ManyToManyField("users.User", through="animes.Rate")
+    status = models.CharField(max_length=15, default="not started")
     categories = models.ManyToManyField("categories.Category")
     
 
