@@ -11,22 +11,20 @@ class UserSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=30)
     last_name = serializers.CharField(max_length=30)
     password = serializers.CharField(max_length=200, write_only=True)
-    
+
     create_at = serializers.DateTimeField(read_only=True)
     update_at = serializers.DateTimeField(read_only=True)
-    
-    
+
     def validate_email(self, email: str):
         user_exists = User.objects.filter(email=email).exists()
         if user_exists:
-            raise UniqueException({ "error": "Email already exists" })
-        
+            raise UniqueException({"error": "Email already exists"})
+
         return email
-    
-    
+
     def create(self, validate_data):
         user = User.objects.create(**validate_data)
-        
+
         return user
 
 
@@ -41,28 +39,29 @@ class UserUpdateSerializer(serializers.Serializer):
     last_name = serializers.CharField(max_length=30)
     password = serializers.CharField(max_length=200)
     current_password = serializers.CharField(max_length=200, write_only=True)
-    
-    
+
     def validate_email(self, email: str):
         user_exists = User.objects.filter(email=email).exists()
         if user_exists:
-            raise UniqueException({ "error": "Email already exists" })
-        
+            raise UniqueException({"error": "Email already exists"})
+
         return email
-    
-    
+
     def validate(self, attrs: dict):
         if attrs.get("password"):
             if not attrs.get("current_password"):
-                raise CurrentPasswordException({ "error": "enter current password(current_password)" })
-            
-            if not check_password(attrs.get("current_password"), self.instance.password):
-                raise CurrentPasswordException({ "error": "invalid current password" })
+                raise CurrentPasswordException(
+                    {"error": "enter current password(current_password)"}
+                )
+
+            if not check_password(
+                attrs.get("current_password"), self.instance.password
+            ):
+                raise CurrentPasswordException({"error": "invalid current password"})
             attrs.pop("current_password")
-        
+
         return attrs
-    
-    
+
     def update(self, instance: User, validated_data: dict):
         for key, value in validated_data.items():
             if key == "password":
@@ -70,8 +69,8 @@ class UserUpdateSerializer(serializers.Serializer):
                 setattr(instance, key, password)
                 instance.save()
                 continue
-            
+
             setattr(instance, key, value)
             instance.save()
-        
+
         return instance

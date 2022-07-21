@@ -1,10 +1,10 @@
-from rest_framework.generics import  ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.authentication import TokenAuthentication
 from .models import Anime
 from rest_framework.permissions import IsAuthenticated
 from .serializers import AnimeSerializer, AnimeWithCategorySerializer
 from .permissions import HasPermission
-from rest_framework.views import APIView, Request, Response,  status
+from rest_framework.views import APIView, Request, Response, status
 from categories.serializers import CategorySerializer
 from categories.models import Category
 
@@ -12,17 +12,15 @@ from categories.models import Category
 class AnimeView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [HasPermission]
-    
-    def get(self, request):     
+
+    def get(self, request):
 
         animes = Anime.objects.all()
         serialized = AnimeWithCategorySerializer(instance=animes, many=True)
-        
+
         return Response(serialized.data, status.HTTP_200_OK)
 
-
-        
-    def post(self, request:Request):
+    def post(self, request: Request):
         serialize_anime = AnimeWithCategorySerializer(data=request.data)
         serialize_anime.is_valid(raise_exception=True)
 
@@ -32,13 +30,14 @@ class AnimeView(APIView):
 
         categories = request.data["categories"]
         for category in categories:
-            
+
             serialize_category = CategorySerializer(data=category)
             serialize_category.is_valid(raise_exception=True)
-            create_category = Category.objects.get_or_create(**serialize_category.validated_data)
+            create_category = Category.objects.get_or_create(
+                **serialize_category.validated_data
+            )
             create_anime.categories.add(create_category[0])
 
         serialize_anime = AnimeWithCategorySerializer(instance=create_anime)
-
 
         return Response(serialize_anime.data, status.HTTP_201_CREATED)
