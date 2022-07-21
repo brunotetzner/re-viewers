@@ -1,3 +1,4 @@
+from collections import UserList
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView, Request, Response, status
@@ -38,3 +39,12 @@ class UserlistViewDetail(APIView):
         serializer.save(user=request.user, anime=anime)
         serializer_data = serializer.data
         return Response(serializer_data, status.HTTP_201_CREATED)
+
+    def patch(self, request: Request, anime_id):
+
+        anime = get_object_or_404(Anime, pk=anime_id)
+        serializer = UserListSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user, anime=anime)
+        serializer_data = serializer.data
+        return Response(serializer_data, status.HTTP_200_OK)

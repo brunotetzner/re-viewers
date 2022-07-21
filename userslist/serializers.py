@@ -11,6 +11,8 @@ class UserListSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ["user", "anime"]
 
+        
+
     """ def create(self, validated_data):
 
         user_id = validated_data.get("user_id")
