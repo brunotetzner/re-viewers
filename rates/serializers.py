@@ -9,7 +9,9 @@ class RateSerializer(serializers.Serializer):
     anime_id = serializers.CharField(write_only=True)
     user_id = serializers.UUIDField(write_only=True)
     anime = AnimeReturnSerializer(read_only=True)
-    gived_rate = serializers.FloatField(min_value=0, max_value=5, source="rate")
+    rate = serializers.FloatField(min_value=0, max_value=5, write_only=True)
+    gived_rate = serializers.FloatField(read_only=True, source="rate")
+    
 
     def create(self, validated_data):
         return Rate.objects.create(**validated_data)
