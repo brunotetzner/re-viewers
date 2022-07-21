@@ -18,11 +18,12 @@ class RatesView(APIView):
         token = Token.objects.get(
             key=self.request.META.get("HTTP_AUTHORIZATION").split(" ")[1]
         )
+
         try:
-            queryset = Rate.objects.filter(user_id=token.user_id)
+            queryset = Rate.objects.filter(user_id=token.user_id, anime_id= request.data["anime_id"])
             queryset[0]
             return Response(
-                {"error": "you already gave a note"}, status.HTTP_400_BAD_REQUEST
+                {"error": "You already gave a note to this anime!"}, status.HTTP_400_BAD_REQUEST
             )
         except:
             request.data["user_id"] = token.user_id
@@ -45,14 +46,20 @@ class RatesView(APIView):
             serialized_anime.save()
 
             return Response(serialized.data, status.HTTP_201_CREATED)
+        
+        
+class RatesIdView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [HasToken]
 
-    def patch(self, request: Request):
+
+    def patch(self, request: Request, anime_id: str):
         token = Token.objects.get(
             key=self.request.META.get("HTTP_AUTHORIZATION").split(" ")[1]
         )
 
         try:
-            rate = get_object_or_404(Rate, user_id=token.user_id)
+            rate = get_object_or_404(Rate, user_id=token.user_id, anime_id=anime_id)
 
             serialized = RateSerializer(rate, request.data, partial=True)
             serialized.is_valid(raise_exception=True)
@@ -64,7 +71,7 @@ class RatesView(APIView):
             for rate in rates:
                 average = rate.rate + average
 
-            anime = get_object_or_404(Anime, pk=rate.anime.id)
+            anime = get_object_or_404(Anime, pk=anime_id)
 
             serialized_anime = AnimeSerializer(
                 anime, {"average_rate": average / len(rates)}, partial=True
