@@ -18,7 +18,6 @@ parso==0.8.3
 pathspec==0.9.0
 pexpect==4.8.0
 pickleshare==0.7.5
-pkg_resources==0.0.0
 platformdirs==2.5.2
 prompt-toolkit==3.0.30
 ptyprocess==0.7.0
