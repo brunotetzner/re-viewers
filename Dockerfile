@@ -7,6 +7,7 @@ ENV PYTHONUNBUFFERED 1
 
 # copiando os requisitos necessários para a aplicação rodar
 COPY ./requirements.txt .
+COPY ./.env .
 
 # executando a instalação dos pacotes
 RUN  pip install --upgrade pip && pip install -r requirements.txt 
