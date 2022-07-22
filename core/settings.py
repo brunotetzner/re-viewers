@@ -32,7 +32,7 @@ SECRET_KEY = getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = getenv("DEBUG", True)
 
-ALLOWED_HOSTS = ["animes-review-api.herokuapp.com", "localhost"]
+ALLOWED_HOSTS = ["animes-review-api.herokuapp.com", "localhost", "127.0.0.1"]
 
 
 # Application definition
