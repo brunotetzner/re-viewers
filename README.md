@@ -79,7 +79,7 @@ Procurando uma API para seu site de
 # <p style="font-weight:bold;text-align:center"> Login</p>
 
 ## Rota
-### `POST /users/profile/`
+### `POST /users/login/`
 <br>
 
 ## Requisição válido
