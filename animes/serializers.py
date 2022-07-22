@@ -13,7 +13,6 @@ class AnimeSerializer(serializers.Serializer):
     status = serializers.CharField()
     original_title = serializers.CharField(max_length=50)
     launch_data = serializers.DateField()
-    average_rate = serializers.FloatField()
 
     def update(self, instance: Anime, validated_data: dict):
         non_updatable = {
@@ -48,10 +47,16 @@ class AnimeWithCategorySerializer(serializers.Serializer):
     sinopse = serializers.CharField(max_length=512)
     studio = serializers.CharField(max_length=30)
     banner = serializers.CharField(max_length=128)
-    status = serializers.CharField()
+    status = serializers.ChoiceField(
+        allow_null=True,
+        choices=(
+           ("On going"),
+           ("Canceled"),
+           ("Finished"),
+        ),
+    )
     original_title = serializers.CharField(max_length=50)
     launch_data = serializers.DateField()
-    average_rate = serializers.FloatField()
     categories = CategorySerializer(many=True)
 
 
