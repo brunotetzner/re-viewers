@@ -9,21 +9,23 @@ from animes.models import Anime
 from rest_framework.authentication import TokenAuthentication
 from userslist.serializers import UserListSerializer
 
+
 def formatted_response(data):
 
     serializer_data = {
         **data,
         "anime": {
             "id": Anime.objects.get(pk=data["anime"]).id,
-            "title": Anime.objects.get(pk=data["anime"]).title
+            "title": Anime.objects.get(pk=data["anime"]).title,
         },
         "user": {
             "id": User.objects.get(pk=data["user"]).id,
-            "name": User.objects.get(pk=data["user"]).first_name ,
-        }
+            "name": User.objects.get(pk=data["user"]).first_name,
+        },
     }
 
     return serializer_data
+
 
 class UserlistView(APIView, CustomPageNumberPagination):
 
@@ -42,13 +44,14 @@ class UserlistView(APIView, CustomPageNumberPagination):
 
         return self.get_paginated_response(serializer_data)
 
+
 class UserlistViewDetail(APIView):
 
     authentication_classes = [TokenAuthentication]
     permission_classes = [HasPermission]
-    
+
     def post(self, request: Request, anime_id):
-        
+
         anime = get_object_or_404(Anime, pk=anime_id)
         serializer = UserListSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -64,4 +67,3 @@ class UserlistViewDetail(APIView):
         serializer.save()
         serializer_data = formatted_response(serializer.data)
         return Response(serializer_data, status.HTTP_200_OK)
-    

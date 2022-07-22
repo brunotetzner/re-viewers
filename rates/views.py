@@ -13,17 +13,20 @@ from .permissions import HasToken
 class RatesView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [HasToken]
-    
+
     def post(self, request: Request):
         token = Token.objects.get(
             key=self.request.META.get("HTTP_AUTHORIZATION").split(" ")[1]
         )
 
         try:
-            queryset = Rate.objects.filter(user_id=token.user_id, anime_id= request.data["anime_id"])
+            queryset = Rate.objects.filter(
+                user_id=token.user_id, anime_id=request.data["anime_id"]
+            )
             queryset[0]
             return Response(
-                {"error": "You already gave a note to this anime!"}, status.HTTP_400_BAD_REQUEST
+                {"error": "You already gave a note to this anime!"},
+                status.HTTP_400_BAD_REQUEST,
             )
         except:
             request.data["user_id"] = token.user_id
@@ -46,12 +49,11 @@ class RatesView(APIView):
             serialized_anime.save()
 
             return Response(serialized.data, status.HTTP_201_CREATED)
-        
-        
+
+
 class RatesIdView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [HasToken]
-
 
     def patch(self, request: Request, anime_id: str):
         token = Token.objects.get(

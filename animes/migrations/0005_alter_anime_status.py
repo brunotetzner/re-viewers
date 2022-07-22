@@ -6,13 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('animes', '0004_alter_anime_average_rate_alter_rate_rate'),
+        ("animes", "0004_alter_anime_average_rate_alter_rate_rate"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='anime',
-            name='status',
-            field=models.CharField(choices=[('P', 'In Production'), ('C', 'Canceled'), ('F', 'Finished')], max_length=30),
+            model_name="anime",
+            name="status",
+            field=models.CharField(
+                choices=[("P", "In Production"), ("C", "Canceled"), ("F", "Finished")],
+                max_length=30,
+            ),
         ),
     ]
