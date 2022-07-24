@@ -41,8 +41,7 @@ class RateViewsTest(APITestCase):
         )
 
         self.assertEqual(response.status_code, 201)
-        
-    
+
     def test_path_view(self):
         anime = self.client.post(
             "/api/animes/",
@@ -66,7 +65,7 @@ class RateViewsTest(APITestCase):
             {"anime_id": anime.data["id"], "rate": 4},
             format="json",
         )
-        
+
         response = self.client.patch(
             f'/api/rate/{anime.data["id"]}/',
             {"rate": 1},
