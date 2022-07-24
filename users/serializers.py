@@ -11,6 +11,7 @@ class UserSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=30)
     last_name = serializers.CharField(max_length=30)
     password = serializers.CharField(max_length=200, write_only=True)
+    avatar = serializers.CharField(max_length=200)
 
     create_at = serializers.DateTimeField(read_only=True)
     update_at = serializers.DateTimeField(read_only=True)
@@ -38,6 +39,7 @@ class UserUpdateSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=30)
     last_name = serializers.CharField(max_length=30)
     password = serializers.CharField(max_length=200)
+    avatar = serializers.CharField(max_length=200)
     current_password = serializers.CharField(max_length=200, write_only=True)
 
     def validate_email(self, email: str):
@@ -74,3 +76,10 @@ class UserUpdateSerializer(serializers.Serializer):
             instance.save()
 
         return instance
+
+
+class UserCommentSerializer(serializers.Serializer):
+    id = serializers.UUIDField(read_only=True)
+    first_name = serializers.CharField(max_length=30)
+    last_name = serializers.CharField(max_length=30)
+    avatar = serializers.CharField(max_length=200)

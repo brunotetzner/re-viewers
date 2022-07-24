@@ -52,6 +52,7 @@ MY_APPS = [
     "animes",
     "categories",
     "userslist",
+    "comments",
 ]
 
 THIRD_PARTY_APPS = [
