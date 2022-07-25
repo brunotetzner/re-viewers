@@ -40,11 +40,6 @@ class UserslistViewsText(APITestCase):
         )
         self.assertEqual(response.status_code,201)
 
-    def test_list_all_view(self):
-        response = self.client.get("/api/userlist/")
-        self.assertEqual(response.status_code, 200)
-
-
     def test_update_view(self):
         anime = self.client.post(
             "/api/animes/",
