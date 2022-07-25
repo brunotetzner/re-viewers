@@ -50,9 +50,9 @@ class AnimeWithCategorySerializer(serializers.Serializer):
     status = serializers.ChoiceField(
         allow_null=True,
         choices=(
-           ("On going"),
-           ("Canceled"),
-           ("Finished"),
+            ("On going"),
+            ("Canceled"),
+            ("Finished"),
         ),
     )
     original_title = serializers.CharField(max_length=50)

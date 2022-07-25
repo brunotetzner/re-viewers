@@ -1,21 +1,21 @@
 from rest_framework import serializers, status
-from animes.models import Rate
-from users.serializers import UserSerializer
+from animes.models import Comment
+from users.serializers import UserCommentSerializer
 from animes.serializers import AnimeReturnSerializer
 
 
-class RateSerializer(serializers.Serializer):
+class CommentSerializer(serializers.Serializer):
     id = serializers.CharField(read_only=True)
     anime_id = serializers.CharField(write_only=True)
     user_id = serializers.UUIDField(write_only=True)
+    user = UserCommentSerializer(read_only=True)
     anime = AnimeReturnSerializer(read_only=True)
-    rate = serializers.FloatField(min_value=0, max_value=5, write_only=True)
-    gived_rate = serializers.FloatField(read_only=True, source="rate")
+    comment = serializers.CharField()
 
     def create(self, validated_data):
-        return Rate.objects.create(**validated_data)
+        return Comment.objects.create(**validated_data)
 
-    def update(self, instance: Rate, validated_data: dict):
+    def update(self, instance: Comment, validated_data: dict):
         non_updatable = {"anime_id", "user_id", "id"}
 
         for key, value in validated_data.items():
