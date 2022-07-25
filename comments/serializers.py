@@ -3,7 +3,6 @@ from animes.models import Comment
 from users.serializers import UserCommentSerializer
 from animes.serializers import AnimeReturnSerializer
 
-
 class CommentSerializer(serializers.Serializer):
     id = serializers.CharField(read_only=True)
     anime_id = serializers.CharField(write_only=True)

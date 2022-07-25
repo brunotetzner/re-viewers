@@ -2,7 +2,6 @@ from rest_framework import serializers, status
 from .models import Anime
 from categories.serializers import CategorySerializer
 
-
 class AnimeSerializer(serializers.Serializer):
     id = serializers.UUIDField(read_only=True)
     image = serializers.CharField()
@@ -58,6 +57,7 @@ class AnimeWithCategorySerializer(serializers.Serializer):
     original_title = serializers.CharField(max_length=50)
     launch_data = serializers.DateField()
     categories = CategorySerializer(many=True)
+    average_rate = serializers.IntegerField() 
 
 
 class AnimeReturnSerializer(serializers.Serializer):

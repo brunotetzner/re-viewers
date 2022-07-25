@@ -19,7 +19,7 @@ class CommentView(APIView):
         token = Token.objects.get(
             key=self.request.META.get("HTTP_AUTHORIZATION").split(" ")[1]
         )
-
+        get_object_or_404(Comment, pk=request.data["anime_id"])
         request.data["user_id"] = token.user_id
         serialized = CommentSerializer(data=request.data, partial=True)
         serialized.is_valid(raise_exception=True)
