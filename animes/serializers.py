@@ -1,4 +1,6 @@
 from rest_framework import serializers, status
+
+from categories.models import Category
 from .models import Anime
 from categories.serializers import CategorySerializer
 
@@ -58,6 +60,36 @@ class AnimeWithCategorySerializer(serializers.Serializer):
     original_title = serializers.CharField(max_length=50)
     launch_data = serializers.DateField()
     categories = CategorySerializer(many=True)
+
+    def update(self, instance: Anime, validated_data: dict):
+        non_updatable = {
+            "id",
+        }
+
+        for key, value in validated_data.items():
+            if key in non_updatable:
+                raise KeyError(
+                    {"message": f"You can not update the {key} property."},
+                    status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+
+                # get de animes por categoria
+
+            if key == "categories":
+                lista = []
+                for category in value:
+                    category2, _ = Category.objects.get_or_create(
+                        category=category["category"]
+                    )
+                    lista.append(category2)
+
+                instance.categories.set(lista)
+                continue
+
+            setattr(instance, key, value)
+            instance.save()
+
+        return instance
 
 
 class AnimeReturnSerializer(serializers.Serializer):
