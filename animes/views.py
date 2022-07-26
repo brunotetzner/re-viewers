@@ -68,3 +68,7 @@ class AnimeIdView(APIView):
         serialized_anime.save()
 
         return Response(serialized_anime.data, status.HTTP_200_OK)
+
+class RetrieveAnimeView(generics.RetrieveAPIView):
+    queryset = Anime.objects.all()
+    serializer_class = AnimeWithCategorySerializer
