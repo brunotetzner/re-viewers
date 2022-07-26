@@ -99,17 +99,15 @@ class AnimeWithCategorySerializer(serializers.Serializer):
                     status.HTTP_422_UNPROCESSABLE_ENTITY,
                 )
 
-                # get de animes por categoria
-
             if key == "categories":
-                lista = []
+                category_list = []
                 for category in value:
-                    category2, _ = Category.objects.get_or_create(
+                    category_get_or_create, _ = Category.objects.get_or_create(
                         category=category["category"]
                     )
-                    lista.append(category2)
+                    category_list.append(category_get_or_create)
 
-                instance.categories.set(lista)
+                instance.categories.set(category_list)
                 continue
 
             setattr(instance, key, value)
