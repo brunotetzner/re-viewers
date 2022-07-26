@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.authentication import TokenAuthentication
 from .models import Anime
@@ -7,6 +8,7 @@ from .permissions import HasPermission
 from rest_framework.views import APIView, Request, Response, status
 from categories.serializers import CategorySerializer
 from categories.models import Category
+from rest_framework import generics
 
 
 class AnimeView(APIView):
@@ -41,3 +43,28 @@ class AnimeView(APIView):
         serialize_anime = AnimeWithCategorySerializer(instance=create_anime)
 
         return Response(serialize_anime.data, status.HTTP_201_CREATED)
+
+
+class AnimeIdView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [HasPermission]
+
+    def patch(self, request: Request, anime_id: str):
+        if not request.data:
+            return Response(
+                {"detail": "Need to inform some key."},
+                status.HTTP_403_FORBIDDEN,
+            )
+
+        serialized_anime = AnimeWithCategorySerializer(data=request.data, partial=True)
+        serialized_anime.is_valid(raise_exception=True)
+
+        anime = get_object_or_404(Anime, pk=anime_id)
+
+        serialized_anime = AnimeWithCategorySerializer(
+            instance=anime, data=request.data, partial=True
+        )
+        serialized_anime.is_valid(raise_exception=True)
+        serialized_anime.save()
+
+        return Response(serialized_anime.data, status.HTTP_200_OK)
