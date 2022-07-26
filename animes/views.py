@@ -45,11 +45,16 @@ class AnimeView(APIView):
         return Response(serialize_anime.data, status.HTTP_201_CREATED)
 
 
-class AnimeIdView(APIView):
+class AnimeIdView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [HasPermission]
 
-    def patch(self, request: Request, anime_id: str):
+    queryset = Anime.objects.all()
+    serializer_class = AnimeWithCategorySerializer
+
+    lookup_field = "id"
+
+    def patch(self, request: Request, id: str):
         if not request.data:
             return Response(
                 {"detail": "Need to inform some key."},
@@ -59,7 +64,7 @@ class AnimeIdView(APIView):
         serialized_anime = AnimeWithCategorySerializer(data=request.data, partial=True)
         serialized_anime.is_valid(raise_exception=True)
 
-        anime = get_object_or_404(Anime, pk=anime_id)
+        anime = get_object_or_404(Anime, pk=id)
 
         serialized_anime = AnimeWithCategorySerializer(
             instance=anime, data=request.data, partial=True
