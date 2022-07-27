@@ -87,20 +87,13 @@ class AnimeByCategory(APIView):
 
             if not category_id:
                 category_not_exists.append(k)
-                continue
-                # return Response(
-                #     {"detail": "Category not found."}, status.HTTP_404_NOT_FOUND
-                # )
+                continue               
 
             animes_in_category = Anime.objects.filter(categories=category_id.id).all()
 
             if not animes_in_category:
                 animes_category_not_exists.append(k)
-                continue
-                # return Response(
-                #     {"detail": "There is no anime registered for this category."},
-                #     status.HTTP_404_NOT_FOUND,
-                # )
+                continue                
 
             serialized = AnimeWithCategorySerializer(animes_in_category, many=True)
 
@@ -123,3 +116,8 @@ class AnimeByCategory(APIView):
                 status.HTTP_200_OK,
             )
         return Response(data, status.HTTP_200_OK)
+
+class RetrieveAnimeView(generics.RetrieveAPIView):
+    queryset = Anime.objects.all()
+    serializer_class = AnimeWithCategorySerializer
+
