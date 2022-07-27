@@ -10,6 +10,7 @@ from .serializers import RateSerializer
 from .permissions import HasToken
 import ipdb
 
+
 class RatesView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [HasToken]
@@ -68,7 +69,6 @@ class RatesIdView(APIView):
         try:
             rate = get_object_or_404(Rate, user_id=token.user_id, anime_id=anime_id)
             serialized = RateSerializer(rate, request.data, partial=True)
-            
 
             serialized.is_valid(raise_exception=True)
             serialized.save()
@@ -80,7 +80,7 @@ class RatesIdView(APIView):
                 average = rate.rate + average
 
             anime = get_object_or_404(Anime, pk=anime_id)
-            new_average = {"average_rate" : average / len(rates)}
+            new_average = {"average_rate": average / len(rates)}
 
             serialized_anime = AnimeRateSerializer(instance=anime, data=new_average)
 

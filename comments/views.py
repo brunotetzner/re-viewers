@@ -9,6 +9,8 @@ from django.http import Http404
 from animes.models import Anime
 from animes.serializers import AnimeReturnSerializer
 import ipdb
+
+
 class CommentView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [HasToken]
@@ -41,8 +43,10 @@ class CommentAnimeIdView(APIView):
         serialized = CommentSerializer(instance=comments, many=True)
 
         if len(serialized.data) == 0:
-            return Response({"message": "Any comment about this anime"}, status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"message": "Any comment about this anime"}, status.HTTP_404_NOT_FOUND
+            )
+
         return Response(serialized.data, status.HTTP_201_CREATED)
 
 

@@ -2,6 +2,7 @@ from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 from users.models import User
 
+
 class UserslistViewsText(APITestCase):
     def setUp(self):
         user = User.objects.create(
@@ -14,7 +15,7 @@ class UserslistViewsText(APITestCase):
         token = Token.objects.create(user=user)
 
         self.client.credentials(HTTP_AUTHORIZATION="Token " + token.key)
-        
+
     def test_post_view(self):
         anime = self.client.post(
             "/api/animes/",
@@ -32,13 +33,13 @@ class UserslistViewsText(APITestCase):
             },
             format="json",
         )
-        
+
         response = self.client.post(
             f'/api/userlist/{anime.data["id"]}/',
             {"watching_status": "Terminado"},
             format="json",
         )
-        self.assertEqual(response.status_code,201)
+        self.assertEqual(response.status_code, 201)
 
     def test_update_view(self):
         anime = self.client.post(

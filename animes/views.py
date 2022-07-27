@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.authentication import TokenAuthentication
@@ -28,21 +29,27 @@ class AnimeView(APIView):
 
         serialize_anime = AnimeSerializer(data=request.data)
         serialize_anime.is_valid(raise_exception=True)
-        create_anime = Anime.objects.create(**serialize_anime.validated_data)
 
-        categories = request.data["categories"]
-        for category in categories:
+        try:
+            create_anime = Anime.objects.create(**serialize_anime.validated_data)
+            categories = request.data["categories"]
+            for category in categories:
 
-            serialize_category = CategorySerializer(data=category)
-            serialize_category.is_valid(raise_exception=True)
-            create_category = Category.objects.get_or_create(
-                **serialize_category.validated_data
-            )
+                serialize_category = CategorySerializer(data=category)
+                serialize_category.is_valid(raise_exception=True)
+                create_category = Category.objects.get_or_create(
+                    **serialize_category.validated_data
+                )
+
             create_anime.categories.add(create_category[0])
+            serialize_anime = AnimeWithCategorySerializer(instance=create_anime)
 
-        serialize_anime = AnimeWithCategorySerializer(instance=create_anime)
+            return Response(serialize_anime.data, status.HTTP_201_CREATED)
 
-        return Response(serialize_anime.data, status.HTTP_201_CREATED)
+        except IntegrityError:
+            return Response(
+                {"detail": "The anime already exists"}, status.HTTP_409_CONFLICT
+            )
 
 
 class AnimeIdView(generics.RetrieveUpdateDestroyAPIView):
@@ -60,19 +67,26 @@ class AnimeIdView(generics.RetrieveUpdateDestroyAPIView):
                 {"detail": "Need to inform some key."},
                 status.HTTP_403_FORBIDDEN,
             )
+        try:
+            serialized_anime = AnimeWithCategorySerializer(
+                data=request.data, partial=True
+            )
+            serialized_anime.is_valid(raise_exception=True)
 
-        serialized_anime = AnimeWithCategorySerializer(data=request.data, partial=True)
-        serialized_anime.is_valid(raise_exception=True)
+            anime = get_object_or_404(Anime, pk=id)
 
-        anime = get_object_or_404(Anime, pk=id)
+            serialized_anime = AnimeWithCategorySerializer(
+                instance=anime, data=request.data, partial=True
+            )
+            serialized_anime.is_valid(raise_exception=True)
+            serialized_anime.save()
 
-        serialized_anime = AnimeWithCategorySerializer(
-            instance=anime, data=request.data, partial=True
-        )
-        serialized_anime.is_valid(raise_exception=True)
-        serialized_anime.save()
+            return Response(serialized_anime.data, status.HTTP_200_OK)
 
-        return Response(serialized_anime.data, status.HTTP_200_OK)
+        except IntegrityError:
+            return Response(
+                {"detail": "The anime already exists"}, status.HTTP_409_CONFLICT
+            )
 
 
 class AnimeByCategory(APIView):
@@ -87,13 +101,13 @@ class AnimeByCategory(APIView):
 
             if not category_id:
                 category_not_exists.append(k)
-                continue               
+                continue
 
             animes_in_category = Anime.objects.filter(categories=category_id.id).all()
 
             if not animes_in_category:
                 animes_category_not_exists.append(k)
-                continue                
+                continue
 
             serialized = AnimeWithCategorySerializer(animes_in_category, many=True)
 
@@ -117,7 +131,17 @@ class AnimeByCategory(APIView):
             )
         return Response(data, status.HTTP_200_OK)
 
+
 class RetrieveAnimeView(generics.RetrieveAPIView):
     queryset = Anime.objects.all()
     serializer_class = AnimeWithCategorySerializer
 
+
+class GetByRateView(generics.ListAPIView):
+    queryset = Anime.objects.all()
+    serializer_class = AnimeWithCategorySerializer
+
+    def get_queryset(self):
+        max_animes = self.kwargs["anime_amount"]
+        return self.queryset.order_by("-average_rate")[0:max_animes]
+    
