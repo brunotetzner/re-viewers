@@ -64,17 +64,20 @@ class UserView(APIView):
         return Response("", status.HTTP_204_NO_CONTENT)
 
 
-class AdminView(SerializerByMethodMixin, generics.ListAPIView):
+class AdminView(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [AdminPermission]
+    
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
-class AdminIdView(SerializerByMethodMixin, generics.ListAPIView):
+class AdminIdView(SerializerByMethodMixin, generics.RetrieveAPIView, generics.DestroyAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [AdminPermission]
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [AdminPermission]
+    
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_map = {
+        "GET": UserSerializer,
+        "DELETE": UserSerializer
+    }
