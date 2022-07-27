@@ -79,7 +79,7 @@ class UserUpdateSerializer(serializers.Serializer):
 
 
 class UserCommentSerializer(serializers.Serializer):
-    id = serializers.UUIDField(read_only=True)
+    user_id = serializers.UUIDField(source="id",read_only=True)
     first_name = serializers.CharField(max_length=30)
     last_name = serializers.CharField(max_length=30)
     avatar = serializers.CharField(max_length=200)

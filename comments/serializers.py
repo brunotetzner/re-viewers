@@ -5,12 +5,12 @@ from animes.serializers import AnimeReturnSerializer
 
 
 class CommentSerializer(serializers.Serializer):
-    id = serializers.CharField(read_only=True)
+    comment_id = serializers.CharField(source="id",read_only=True)
+    comment = serializers.CharField()
     anime_id = serializers.CharField(write_only=True)
     user_id = serializers.UUIDField(write_only=True)
     user = UserCommentSerializer(read_only=True)
     anime = AnimeReturnSerializer(read_only=True)
-    comment = serializers.CharField()
 
     def create(self, validated_data):
         return Comment.objects.create(**validated_data)
