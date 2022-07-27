@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView, Request, Response, status
+from rest_framework import generics
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth import authenticate
@@ -7,31 +8,18 @@ from django.contrib.auth import authenticate
 from users.models import User
 from users.serializers import UserSerializer, LoginSerializer, UserUpdateSerializer
 from users.permissions import UserPermission, AdminPermission
+from users.mixins import SerializerByMethodMixin, LoginModelMixins
 
 
-class UserRegisterView(APIView):
-    def post(self, req: Request):
-        serialized = UserSerializer(data=req.data)
-        serialized.is_valid(raise_exception=True)
-        serialized.save()
-
-        return Response(serialized.data, status.HTTP_201_CREATED)
+class UserRegisterView(SerializerByMethodMixin, generics.CreateAPIView):
+    serializer_map = {
+        "POST": UserSerializer
+    }
 
 
-class UserLoginView(APIView):
-    def post(self, req: Request):
-        serialized = LoginSerializer(data=req.data)
-        serialized.is_valid(raise_exception=True)
-
-        user: User = authenticate(**serialized.validated_data)
-        if not user:
-            return Response(
-                {"error": "Invalid credentials"}, status.HTTP_401_UNAUTHORIZED
-            )
-
-        token, _ = Token.objects.get_or_create(user=user)
-
-        return Response({"token": token.key}, status.HTTP_200_OK)
+class UserLoginView(LoginModelMixins, generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        return self.login(request, *args, **kwargs)
 
 
 class UserView(APIView):

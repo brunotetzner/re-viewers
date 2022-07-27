@@ -11,7 +11,7 @@ class UserSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=30)
     last_name = serializers.CharField(max_length=30)
     password = serializers.CharField(max_length=200, write_only=True)
-    avatar = serializers.CharField(max_length=200)
+    avatar = serializers.CharField(max_length=200, required=False)
 
     create_at = serializers.DateTimeField(read_only=True)
     update_at = serializers.DateTimeField(read_only=True)
