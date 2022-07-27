@@ -117,6 +117,7 @@ class AnimeWithCategorySerializer(serializers.Serializer):
 
 
 class AnimeReturnSerializer(serializers.Serializer):
+    anime_id = serializers.CharField(source="id")
     title = serializers.CharField(max_length=128)
     average_rate = serializers.FloatField(min_value=0, max_value=5)
 

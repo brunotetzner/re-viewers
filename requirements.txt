@@ -15,3 +15,4 @@ ipdb==0.13.9
 asttokens==2.0.5
 dj-database-url==0.5.0
 coverage==6.4.2
+psycopg2-binary==2.9.3
