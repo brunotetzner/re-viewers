@@ -11,10 +11,8 @@ from users.permissions import UserPermission, AdminPermission
 from users.mixins import SerializerByMethodMixin
 
 
-class UserRegisterView(SerializerByMethodMixin, generics.CreateAPIView):
-    serializer_map = {
-        "POST": UserSerializer
-    }
+class UserRegisterView(generics.CreateAPIView):
+    serializer_class = UserSerializer
 
 
 class UserLoginView(APIView):
