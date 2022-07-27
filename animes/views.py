@@ -74,6 +74,50 @@ class AnimeIdView(generics.RetrieveUpdateDestroyAPIView):
 
         return Response(serialized_anime.data, status.HTTP_200_OK)
 
+
+class AnimeByCategory(APIView):
+    def get(self, request: Request):
+        data = []
+        data_id = []
+        category_not_exists = []
+        animes_category_not_exists = []
+
+        for k in request.query_params.keys():
+            category_id = Category.objects.filter(category__icontains=k).first()
+
+            if not category_id:
+                category_not_exists.append(k)
+                continue               
+
+            animes_in_category = Anime.objects.filter(categories=category_id.id).all()
+
+            if not animes_in_category:
+                animes_category_not_exists.append(k)
+                continue                
+
+            serialized = AnimeWithCategorySerializer(animes_in_category, many=True)
+
+            if serialized.data[0]["id"] not in data_id:
+                data_id.append(serialized.data[0]["id"])
+                data.append(serialized.data)
+
+        if category_not_exists:
+            return Response(
+                {"data": data, "category_not_exists": category_not_exists},
+                status.HTTP_200_OK,
+            )
+
+        if animes_category_not_exists:
+            return Response(
+                {
+                    "data": data,
+                    "animes_category_not_exists": animes_category_not_exists,
+                },
+                status.HTTP_200_OK,
+            )
+        return Response(data, status.HTTP_200_OK)
+
 class RetrieveAnimeView(generics.RetrieveAPIView):
     queryset = Anime.objects.all()
     serializer_class = AnimeWithCategorySerializer
+
