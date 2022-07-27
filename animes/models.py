@@ -12,11 +12,11 @@ class AnimeStatus(models.TextChoices):
 class Anime(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     image = models.CharField(max_length=128)
-    title = models.CharField(max_length=50)
+    title = models.CharField(unique=True, max_length=50)
     sinopse = models.CharField(max_length=512)
     studio = models.CharField(max_length=30)
     banner = models.CharField(max_length=128)
-    original_title = models.CharField(max_length=50)
+    original_title = models.CharField(unique=True, max_length=50)
     launch_data = models.DateField()
     average_rate = models.FloatField(
         validators=[MinValueValidator(0), MaxValueValidator(5)], default=0

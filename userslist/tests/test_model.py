@@ -3,15 +3,15 @@ from animes.models import Anime
 
 from users.models import User, Userlist
 
+
 class UserlistModelTest(TestCase):
     @classmethod
-
     def setUpTestData(cls):
         cls.email = "bernardo@mail.com"
         cls.first_name = "bernardo"
         cls.last_name = "costa"
         cls.password = "1234"
-        
+
         cls.user = User.objects.create(
             email=cls.email,
             first_name=cls.first_name,
@@ -44,13 +44,11 @@ class UserlistModelTest(TestCase):
         cls.watching_status = "Terminado"
 
         cls.userlist = Userlist.objects.create(
-            anime=cls.anime,
-            user=cls.user,
-            watching_status=cls.watching_status
+            anime=cls.anime, user=cls.user, watching_status=cls.watching_status
         )
 
     def test_animelist_has_information_fields(self):
-        
+
         self.assertEqual(self.userlist.anime, self.anime)
         self.assertEqual(self.userlist.user, self.user)
         self.assertEqual(self.userlist.watching_status, self.watching_status)

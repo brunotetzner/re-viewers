@@ -4,6 +4,7 @@ from categories.models import Category
 from .models import Anime
 from categories.serializers import CategorySerializer
 
+
 class AnimeSerializer(serializers.Serializer):
     id = serializers.UUIDField(read_only=True)
     image = serializers.CharField()
@@ -59,7 +60,7 @@ class AnimeWithCategorySerializer(serializers.Serializer):
     original_title = serializers.CharField(max_length=50)
     launch_data = serializers.DateField()
     categories = CategorySerializer(many=True)
-    average_rate = serializers.IntegerField(min_value=0, max_value=5, required=False) 
+    average_rate = serializers.IntegerField(min_value=0, max_value=5, required=False)
 
     def update(self, instance: Anime, validated_data: dict):
         non_updatable = {
@@ -72,7 +73,6 @@ class AnimeWithCategorySerializer(serializers.Serializer):
             "status",
             "original_title",
             "launch_data",
-           
         }
 
         for key, value in validated_data.items():
@@ -117,12 +117,14 @@ class AnimeWithCategorySerializer(serializers.Serializer):
 
 
 class AnimeReturnSerializer(serializers.Serializer):
+    anime_id = serializers.CharField(source="id")
     title = serializers.CharField(max_length=128)
     average_rate = serializers.FloatField(min_value=0, max_value=5)
 
+
 class AnimeRateSerializer(serializers.Serializer):
     average_rate = serializers.FloatField(min_value=0, max_value=5)
-    
+
     def update(self, instance: Anime, validated_data: dict):
         non_updatable = {
             "id",
@@ -134,7 +136,6 @@ class AnimeRateSerializer(serializers.Serializer):
             "status",
             "original_title",
             "launch_data",
-           
         }
 
         for key, value in validated_data.items():
