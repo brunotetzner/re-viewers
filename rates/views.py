@@ -15,39 +15,34 @@ class RatesView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [HasToken]
 
-    def post(self, request: Request):
-        token = Token.objects.get(
-            key=self.request.META.get("HTTP_AUTHORIZATION").split(" ")[1]
-        )
+    def post(self, request: Request, anime_id: str):
+
+        user = request.user
 
         try:
-            anime = get_object_or_404(Anime, pk=request.data["anime_id"])
+            anime = get_object_or_404(Anime, pk=anime_id)
 
-            queryset = Rate.objects.filter(
-                user_id=token.user_id, anime_id=request.data["anime_id"]
-            )
-            queryset[0]
-            return Response(
-                {"error": "You already gave a note to this anime!"},
-                status.HTTP_400_BAD_REQUEST,
-            )
+            queryset = Rate.objects.filter(user_id=user.id, anime_id=anime_id)
 
-        except Http404:
-            return Response({"message": "Anime not found."}, status.HTTP_404_NOT_FOUND)
+            if queryset:
+                return Response(
+                    {"detail": "You already gave a note to this anime!"},
+                    status.HTTP_400_BAD_REQUEST,
+                )
 
-        except:
-            request.data["user_id"] = token.user_id
+            request.data["user_id"] = user.id
+            request.data["anime_id"] = anime_id
+
             serialized = RateSerializer(data=request.data, partial=True)
             serialized.is_valid(raise_exception=True)
             serialized.save()
 
-            rates = Rate.objects.filter(anime_id=request.data["anime_id"])
+            rates = Rate.objects.filter(anime_id=anime_id)
             average = 0
 
             for rate in rates:
                 average = rate.rate + average
 
-            anime = get_object_or_404(Anime, pk=request.data["anime_id"])
             serialized_anime = AnimeWithCategorySerializer(
                 anime, {"average_rate": average / len(rates)}, partial=True
             )
@@ -56,18 +51,53 @@ class RatesView(APIView):
 
             return Response(serialized.data, status.HTTP_201_CREATED)
 
+        except Http404:
+            return Response({"detail": "Anime not found."}, status.HTTP_404_NOT_FOUND)
+
+    def patch(self, request: Request, anime_id: str):
+
+        user = request.user
+
+        try:
+            rate = get_object_or_404(Rate, user_id=user.id, anime_id=anime_id)
+            serialized = RateSerializer(rate, request.data, partial=True)
+
+            serialized.is_valid(raise_exception=True)
+            serialized.save()
+
+            rates = Rate.objects.filter(anime_id=rate.anime.id)
+            average = 0
+
+            for rate in rates:
+                average = rate.rate + average
+
+            anime = get_object_or_404(Anime, pk=anime_id)
+            new_average = {"average_rate": average / len(rates)}
+
+            serialized_anime = AnimeRateSerializer(instance=anime, data=new_average)
+
+            serialized_anime.is_valid(raise_exception=True)
+            serialized_anime.save()
+
+            updated_rate = get_object_or_404(Rate, id=rate.id)
+            serialized = RateSerializer(updated_rate)
+
+            return Response(serialized.data, status.HTTP_200_OK)
+
+        except Http404:
+            return Response({"message": "Rate not found."}, status.HTTP_404_NOT_FOUND)
+
 
 class RatesIdView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [HasToken]
 
     def patch(self, request: Request, anime_id: str):
-        token = Token.objects.get(
-            key=self.request.META.get("HTTP_AUTHORIZATION").split(" ")[1]
-        )
+
+        user = request.user
 
         try:
-            rate = get_object_or_404(Rate, user_id=token.user_id, anime_id=anime_id)
+            rate = get_object_or_404(Rate, user_id=user.id, anime_id=anime_id)
             serialized = RateSerializer(rate, request.data, partial=True)
 
             serialized.is_valid(raise_exception=True)
