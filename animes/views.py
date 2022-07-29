@@ -40,8 +40,8 @@ class AnimeView(APIView):
                 create_category = Category.objects.get_or_create(
                     **serialize_category.validated_data
                 )
+                create_anime.categories.add(create_category[0])
 
-            create_anime.categories.add(create_category[0])
             serialize_anime = AnimeWithCategorySerializer(instance=create_anime)
 
             return Response(serialize_anime.data, status.HTTP_201_CREATED)
@@ -144,4 +144,3 @@ class GetByRateView(generics.ListAPIView):
     def get_queryset(self):
         max_animes = self.kwargs["anime_amount"]
         return self.queryset.order_by("-average_rate")[0:max_animes]
-    
