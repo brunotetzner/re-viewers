@@ -118,7 +118,7 @@ class AnimeByCategory(APIView):
         if category_not_exists:
             return Response(
                 {"data": data, "category_not_exists": category_not_exists},
-                status.HTTP_200_OK,
+                status.HTTP_404_NOT_FOUND,
             )
 
         if animes_category_not_exists:
@@ -129,7 +129,7 @@ class AnimeByCategory(APIView):
                 },
                 status.HTTP_200_OK,
             )
-        return Response(data, status.HTTP_200_OK)
+        return Response(data, status.HTTP_404_NOT_FOUND)
 
 
 class RetrieveAnimeView(generics.RetrieveAPIView):

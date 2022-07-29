@@ -47,7 +47,7 @@ class CommentAnimeIdView(APIView):
                 {"message": "Any comment about this anime"}, status.HTTP_404_NOT_FOUND
             )
 
-        return Response(serialized.data, status.HTTP_201_CREATED)
+        return Response(serialized.data, status.HTTP_200_OK)
 
 
 class CommentIdView(APIView):
