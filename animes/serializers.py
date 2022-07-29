@@ -60,7 +60,7 @@ class AnimeWithCategorySerializer(serializers.Serializer):
     original_title = serializers.CharField(max_length=50)
     launch_data = serializers.DateField()
     categories = CategorySerializer(many=True)
-    average_rate = serializers.IntegerField(min_value=0, max_value=5, required=False)
+    average_rate = serializers.FloatField(min_value=0, max_value=5, required=False)
 
     def update(self, instance: Anime, validated_data: dict):
         non_updatable = {
