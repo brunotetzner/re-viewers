@@ -3,6 +3,8 @@ from rest_framework.views import APIView, Request, Response, status
 from rest_framework.authtoken.models import Token
 from animes.models import Comment
 from django.shortcuts import get_object_or_404
+
+from users.models import User
 from .serializers import CommentSerializer
 from rates.permissions import HasToken
 from django.http import Http404
@@ -55,11 +57,11 @@ class CommentIdView(APIView):
     permission_classes = [HasToken]
 
     def patch(self, request: Request, comment_id: str):
-        token = Token.objects.get(
-            key=self.request.META.get("HTTP_AUTHORIZATION").split(" ")[1]
-        )
+
+        user = request.user
+
         comment = get_object_or_404(Comment, pk=comment_id)
-        if comment.user.id != token.user_id:
+        if comment.user.id != user.id:
             return Response(
                 {"detail": "You do not own the comment"}, status.HTTP_403_FORBIDDEN
             )
@@ -75,18 +77,16 @@ class CommentIdView(APIView):
             return Response(err.args[0], err.args[1])
 
     def delete(self, request: Request, comment_id: str):
-        token = Token.objects.get(
-            key=self.request.META.get("HTTP_AUTHORIZATION").split(" ")[1]
-        )
+
+        user = request.user
 
         comment = get_object_or_404(Comment, pk=comment_id)
 
-        if comment.user.id != token.user_id:
+        if user.is_superuser or comment.user.id == user.id:
+            comment.delete()
 
-            return Response(
-                {"detail": "You do not own the comment"}, status.HTTP_403_FORBIDDEN
-            )
+            return Response("", status.HTTP_204_NO_CONTENT)
 
-        comment.delete()
-
-        return Response("", status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"detail": "You do not own the comment"}, status.HTTP_403_FORBIDDEN
+        )
