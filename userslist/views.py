@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView, Request, Response, status
 from core.pagination import CustomPageNumberPagination
 from users.models import User, Userlist
-from .permissions import HasPermission
+from .permissions import HasPermission, HasToken
 from animes.models import Anime
 from rest_framework.authentication import TokenAuthentication
 from userslist.serializers import UserListSerializer
@@ -30,7 +30,7 @@ def formatted_response(data):
 class UserlistView(APIView, CustomPageNumberPagination):
 
     authentication_classes = [TokenAuthentication]
-    permission_classes = [HasPermission]
+    permission_classes = [HasToken, HasPermission]
 
     def get(self, request):
 
