@@ -40,8 +40,8 @@ class AnimeView(APIView):
                 create_category = Category.objects.get_or_create(
                     **serialize_category.validated_data
                 )
+                create_anime.categories.add(create_category[0])
 
-            create_anime.categories.add(create_category[0])
             serialize_anime = AnimeWithCategorySerializer(instance=create_anime)
 
             return Response(serialize_anime.data, status.HTTP_201_CREATED)
@@ -118,7 +118,7 @@ class AnimeByCategory(APIView):
         if category_not_exists:
             return Response(
                 {"data": data, "category_not_exists": category_not_exists},
-                status.HTTP_404_NOT_FOUND,
+                status.HTTP_200_OK,
             )
 
         if animes_category_not_exists:
@@ -129,7 +129,8 @@ class AnimeByCategory(APIView):
                 },
                 status.HTTP_200_OK,
             )
-        return Response(data, status.HTTP_404_NOT_FOUND)
+
+        return Response(data, status.HTTP_200_OK)
 
 
 class RetrieveAnimeView(generics.RetrieveAPIView):
@@ -144,4 +145,3 @@ class GetByRateView(generics.ListAPIView):
     def get_queryset(self):
         max_animes = self.kwargs["anime_amount"]
         return self.queryset.order_by("-average_rate")[0:max_animes]
-    
