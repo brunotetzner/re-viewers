@@ -13,7 +13,7 @@ class Anime(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     image = models.CharField(max_length=128)
     title = models.CharField(unique=True, max_length=50)
-    sinopse = models.CharField(max_length=512)
+    sinopse = models.CharField(max_length=2000)
     studio = models.CharField(max_length=30)
     banner = models.CharField(max_length=128)
     original_title = models.CharField(unique=True, max_length=50)

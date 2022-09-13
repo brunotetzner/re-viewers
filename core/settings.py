@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from os import getenv
 from pathlib import Path
 from dotenv import load_dotenv
+
 import dj_database_url
 import os
 
@@ -44,6 +45,7 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
 ]
 
 MY_APPS = [
@@ -71,7 +73,11 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = ("http://localhost:3000",)
 
 ROOT_URLCONF = "core.urls"
 
@@ -124,12 +130,13 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:
     db_from_env = dj_database_url.config(
-        default=DATABASE_URL, conn_max_age=500, ssl_require=False)
-    DATABASES['default'].update(db_from_env)
-    debug=True
+        default=DATABASE_URL, conn_max_age=500, ssl_require=False
+    )
+    DATABASES["default"].update(db_from_env)
+    debug = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/

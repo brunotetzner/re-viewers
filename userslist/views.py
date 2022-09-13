@@ -17,6 +17,8 @@ def formatted_response(data):
         "anime": {
             "id": Anime.objects.get(pk=data["anime"]).id,
             "title": Anime.objects.get(pk=data["anime"]).title,
+            "image": Anime.objects.get(pk=data["anime"]).image,
+            "average_rate": Anime.objects.get(pk=data["anime"]).average_rate,
         },
         "user": {
             "id": User.objects.get(pk=data["user"]).id,
